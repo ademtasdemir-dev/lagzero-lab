@@ -1,4 +1,4 @@
-# LAG|ZERØ Lab
+﻿# LAG|ZERØ Lab
 
 **TESTED. MEASURED. OPTIMIZED.**
 
@@ -6,7 +6,7 @@ Gaming performance tools by LAG|ZERØ – ping tests, NVIDIA guides and a contro
 
 🌐 **Live:** https://sikkkilaci.github.io/lagzero-lab/ · 🇩🇪 Deutsch: https://sikkkilaci.github.io/lagzero-lab/de/
 
-💬 **Discord:** https://discord.gg/TjRhpfgu2c
+💬 **Discord:** https://discord.gg/wUFMj2dGX8
 
 | Tool | English | Deutsch |
 |---|---|---|
