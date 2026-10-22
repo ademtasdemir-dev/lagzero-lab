@@ -4,7 +4,7 @@
 
 Gaming performance tools by LAG|ZERØ – ping tests, NVIDIA guides and a controller test lab.
 
-🌐 **Live:** https://sikkkilaci.github.io/lagzero-lab/ · 🇩🇪 Deutsch: https://sikkkilaci.github.io/lagzero-lab/de/
+🌐 **Live:** https://ademtasdemir-dev.github.io/lagzero-lab/ · 🇩🇪 Deutsch: https://ademtasdemir-dev.github.io/lagzero-lab/de/
 
 💬 **Discord:** https://discord.gg/wUFMj2dGX8
 
