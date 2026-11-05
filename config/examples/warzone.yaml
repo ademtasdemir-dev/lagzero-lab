@@ -1,0 +1,37 @@
+# Warzone recordings from OBS: 1920x1080, no facecam, one audio track (mic + game + Discord mixed).
+#   copy to config/local.yaml, then:
+#   uv run python split_tracks.py "D:/Aufnahmen/runde.mkv"
+#   uv run nightcut run "D:/Aufnahmen/getrennt/runde.mkv" --profile warzone --config config/local.yaml --no-fill
+# Or drop recordings on warzone.bat, which does both steps.
+# Recording with separate OBS tracks already? Then skip split_tracks.py and name the tracks
+# MIC / GAME / PARTY as in config/default.yaml.
+
+layout:
+  gameplay: { x: 0.0, y: 0.0, w: 1.0, h: 1.0 }
+  facecam: null
+
+audio:
+  mic:   { title: MIC,  index: 0 }   # voices (you + Discord), split off by split_tracks.py
+  game:  { title: GAME, index: 1 }   # game sound without voices
+  party: null                        # Discord is part of MIC
+
+# Reactions and spoken words count, explosions alone less.
+signals:
+  mic: 1.0
+  game: 0.4
+  keywords: 1.5
+
+# The split voice track is very clean; 20 dB above its floor keeps out
+# the remains of gunfire that the separation let through.
+transcribe:
+  voice_margin_db: 20
+
+# Own kills from the ELIMINIERT banner (profiles/warzone.yaml).
+killfeed:
+  player_names: ["ME"]
+  every_s: 2
+  panels_per_call: 6
+
+editor:
+  target_minutes: 5    # one Resurgence round (~12 min) -> ~5 min highlights; raise for long sessions
+  fill: false          # calm rounds become shorter instead of being filled with idle time

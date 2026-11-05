@@ -1,0 +1,59 @@
+# Game profile: Call of Duty: Warzone (German UI).
+# Tuned on 1920x1080 Resurgence footage. Works with the player's own name hidden in game.
+# Settings for recordings with a single audio track: config/examples/warzone.yaml
+
+name: Warzone
+game_type: shooter     # offers kill, multikill, death ... to the vision model
+
+# Words in the mic transcript that usually mean something happened.
+# Weight is added to the highlight score for the duration of the sentence.
+# Turkish exclamations are spelled the way Whisper (German) usually writes them.
+keywords:
+  3.0: ["let's go", "lets go", "oh mein gott", "ach du scheiße", "was war das", "alle tot", "squad wipe",
+        "ganzes team", "gewonnen", "sieg", "jaaa", "boah", "digga", "alter", "yallah", "vallah", "oha"]
+  2.0: ["krass", "geil", "sauber", "nice", "haha", "hahaha", "wie geil", "doppel", "triple", "drei",
+        "einer down", "der ist down", "down", "hab ihn", "hab den", "erledigt", "kopfschuss", "headshot",
+        "zurück", "gulag"]
+  1.0: ["nein", "neee", "ey", "warum", "wo kam der", "schon wieder", "gg", "was", "lan", "hadi"]
+
+vision_hints: |
+  The game is Call of Duty: Warzone (first-person shooter, German UI).
+  Ignore the performance bar at the very top (FPS, LATENZ ...) and any controller or input overlay
+  in a corner: they are not part of the game.
+  Signs of a highlight: the banner "ELIMINIERT: <name>" with a picture card at the bottom centre
+  (the player killed someone), the toast "FEIND AM BODEN" at the top right (enemy downed),
+  medals in the screen centre such as "KOPFSCHUSS", red hit markers and "+100" XP numbers,
+  several eliminations in a row, a whole enemy squad wiped, a vehicle destroyed, winning the Gulag.
+  Signs of a death: grey screen, kill cam, "TEAMKAMERAD TOT", spectating a teammate, the Gulag intro.
+  Not a highlight: the buy station menu (VORRATSSTATION), the tactical map, the inventory,
+  looting, walking or driving without fights, the pre-game lobby and loading screens,
+  and the start of a match: sitting in or jumping out of the helicopter or plane (infil).
+
+# What a moment is worth (0..1): kills before reactions, a death alone is hardly a highlight.
+vision_events:
+  squad_wipe: 1.0
+  gulag_win: 0.9
+  multikill: 1.0
+  kill: 0.85
+  reaction: 0.6
+  explosion: 0.5
+  death: 0.1
+
+# The player's own kills. Warzone can hide the player's name, so kill feed lines of the player
+# have no killer name and cannot be matched. The "ELIMINIERT: <name>" banner at the bottom centre
+# appears only for the player's own kills: it is read instead of the kill feed.
+# Needs killfeed.player_names: ["ME"] in your config (config/examples/warzone.yaml has it).
+killfeed_region: { x: 0.38, y: 0.835, w: 0.24, h: 0.115 }
+killfeed_prompt: |
+  You look at cut-outs from a Call of Duty: Warzone screen.
+  The image is a vertical stack of {n} panels of equal height, numbered 1 to {n} from top to bottom.
+  When the player eliminates an enemy, a banner appears: the word "ELIMINIERT:" followed by the enemy's
+  name in red, above a picture card. Ignore everything else (weapon icons, "INVENTAR", prices, menus).
+  For every panel that shows this banner, report one kill with killer "ME" and the enemy name as victim.
+  Answer only with JSON:
+  {{"panels": [{{"panel": <panel number>, "kills": [{{"killer": "ME", "victim": <enemy name as written>}}]}}]}}
+  If no panel shows the banner, answer {{"panels": []}}.
+
+# The banner is read every 2 s and is more reliable than four frames: a kill the vision model
+# thinks it saw without a banner is rated as a reaction.
+killfeed_confirms_kills: true

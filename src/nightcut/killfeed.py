@@ -111,8 +111,11 @@ def read_tiles(tiles: list[dict], cfg: dict, progress=None, cache: Path | None =
         count = len(tile["times"])
         with lock:
             used.add(n)
+        # A profile may bring its own prompt, e.g. for games that hide the player's name and show
+        # an elimination banner instead of a readable kill feed line (see profiles/warzone.yaml).
+        prompt = cfg["profile"].get("killfeed_prompt") or SYSTEM
         try:
-            answer = llm.chat_json(ocfg, model, SYSTEM.format(n=count), f"{count} panels.",
+            answer = llm.chat_json(ocfg, model, prompt.format(n=count), f"{count} panels.",
                                    images=[Path(tile["file"]).read_bytes()], temperature=0.0,
                                    keep_loaded=True, max_tokens=800)
         except llm.OllamaError:

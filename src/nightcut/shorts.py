@@ -27,6 +27,38 @@ def word_timestamps(pcm: np.ndarray, sample_rate: int, start: float, end: float,
         text = ch["text"].strip()
         if text and a is not None:
             words.append({"start": a, "end": b if b is not None else a + 0.4, "text": text})
+    return clean_words(words)
+
+
+def clean_words(words: list[dict]) -> list[dict]:
+    """Remove Whisper loops from word captions and drop captions that are only noise.
+
+    A group of two to four words repeated right after itself is cut to one copy. A single word
+    keeps up to three repeats ("nein nein nein" is real), only a fourth one in a row goes.
+    """
+    from .transcribe import is_noise
+
+    def key(w: dict) -> str:
+        return _clean(w["text"])
+
+    words = list(words)
+    changed = True
+    while changed:
+        changed = False
+        for n in (4, 3, 2, 1):
+            i = 0
+            while i + 2 * n <= len(words):
+                if n == 1:
+                    loop = i + 3 < len(words) and len({key(w) for w in words[i:i + 4]}) == 1
+                else:
+                    loop = [key(w) for w in words[i:i + n]] == [key(w) for w in words[i + n:i + 2 * n]]
+                if loop:
+                    del words[i + n:i + 2 * n]
+                    changed = True
+                else:
+                    i += 1
+    if not words or is_noise(" ".join(w["text"] for w in words)):
+        return []
     return words
 
 

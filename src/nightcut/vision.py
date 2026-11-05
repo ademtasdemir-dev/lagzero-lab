@@ -94,6 +94,10 @@ def event_weights(cfg: dict | None = None) -> dict[str, float]:
 def rescore(candidates: list[dict], cfg: dict | None = None) -> None:
     """Blend audio/transcript score with the vision rating into one 0..1 value."""
     weights = {**event_weights(cfg), "unknown": EVENT_WEIGHT["unknown"]}
+    # Profiles whose kill feed reading is reliable (profiles/warzone.yaml) let it be the only proof of
+    # a kill: a kill the vision model believes it saw in four frames, with no feed entry, is a reaction.
+    feed_only = bool(((cfg or {}).get("profile") or {}).get("killfeed_confirms_kills")
+                     and ((cfg or {}).get("killfeed") or {}).get("player_names"))
     top = max((c["score"] for c in candidates), default=1.0) or 1.0
     for c in candidates:
         audio = c["score"] / top
@@ -102,8 +106,13 @@ def rescore(candidates: list[dict], cfg: dict | None = None) -> None:
             c["final_score"] = round(audio, 4)
             continue
         kills = c.get("kills", 0)
+        if feed_only and not kills and vis["event"] in ("kill", "multikill"):
+            vis.update(event="reaction", intensity=min(vis["intensity"], 5))
         if kills and weights.get(vis["event"], 0.5) < weights["kill"]:
             # the kill feed is more reliable than a few frames: the moment does contain kills
             vis.update(event="multikill" if kills > 1 else "kill", intensity=max(vis["intensity"], min(10, 5 + 2 * kills)))
+        if kills and not vis["summary"].startswith("Kill feed:"):
+            # the editor names clips after the summary; frames often miss kills the feed proves
+            vis["summary"] = f"Kill feed: {kills} kill{'s' if kills > 1 else ''} by the player. " + vis["summary"]
         visual = vis["intensity"] / 10 * weights.get(vis["event"], 0.5)
         c["final_score"] = round(0.45 * audio + 0.55 * visual, 4)

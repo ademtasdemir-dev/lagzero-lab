@@ -9,6 +9,10 @@ uploaded anywhere; all models run on your own GPU.
 
 > 🇩🇪 Deutsche Anleitung: [README.de.md](README.de.md)
 
+> 🎮 **This fork** adds a Call of Duty: Warzone profile, own-kill detection when the player's name is hidden,
+> voice/game separation for single-track recordings and Whisper clean-ups: [README.warzone.md](README.warzone.md) (German).
+> Original project: [Nilson89/nightcut](https://github.com/Nilson89/nightcut).
+
 ## What it does
 
 | Step | How | Output |
@@ -38,7 +42,7 @@ continues where it stopped.
 
 ## One-click install (Windows)
 
-Download [install.bat](https://github.com/Nilson89/nightcut/releases/latest/download/install.bat)
+Download [install.bat](https://github.com/ademtasdemir-dev/lagzero-lab/raw/nightcut-warzone/install.bat)
 (or open `install.bat` in the repository → *Download raw file*) and double-click it. It installs
 Git, ffmpeg, Ollama and uv via winget, clones nightcut to your desktop (or `C:\nightcut` with a
 desktop shortcut if your desktop is synced by OneDrive), runs `uv sync` and pulls both models.
@@ -47,7 +51,7 @@ About 25 GB of free space needed; your NVIDIA driver must already be up to date.
 ## Quick start (manual)
 
 ```bash
-git clone https://github.com/Nilson89/nightcut.git
+git clone -b nightcut-warzone https://github.com/ademtasdemir-dev/lagzero-lab.git nightcut
 cd nightcut
 uv sync                       # installs Python 3.12, PyTorch (CUDA 12.8) and dependencies
 ollama pull qwen2.5vl:7b      # vision model

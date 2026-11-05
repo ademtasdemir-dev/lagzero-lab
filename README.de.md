@@ -7,6 +7,10 @@ OBS-Aufnahme, findet die besten Momente und baut daraus eine Timeline, die du in
 **DaVinci Resolve** oder **Premiere Pro** importierst. Du prüfst, passt an und renderst.
 Alles läuft auf deiner eigenen Grafikkarte, nichts wird hochgeladen.
 
+> 🎮 **Dieser Fork** ergänzt ein Profil für Call of Duty: Warzone, Kill-Erkennung bei ausgeblendetem Namen,
+> Stimmtrennung für Aufnahmen mit nur einer Tonspur und Filter gegen erfundene Untertitel:
+> [README.warzone.md](README.warzone.md). Original: [Nilson89/nightcut](https://github.com/Nilson89/nightcut).
+
 ## Was du brauchst
 
 - NVIDIA-Grafikkarte mit **16 GB VRAM** (z.B. RTX 5080, 5070 Ti, 5060 Ti 16 GB)
@@ -17,7 +21,7 @@ Alles läuft auf deiner eigenen Grafikkarte, nichts wird hochgeladen.
 
 ## Installation mit einem Klick (Windows)
 
-1. [install.bat herunterladen](https://github.com/Nilson89/nightcut/releases/latest/download/install.bat)
+1. [install.bat herunterladen](https://github.com/ademtasdemir-dev/lagzero-lab/raw/nightcut-warzone/install.bat)
    (oder im Repository auf `install.bat` → *Download raw file*)
 2. Doppelklick. Falls Windows warnt: *Weitere Informationen → Trotzdem ausführen*.
 
@@ -32,7 +36,7 @@ Den NVIDIA-Treiber installiert das Skript nicht, der muss schon aktuell sein.
 
 ```bash
 # 1. Repository holen
-git clone https://github.com/Nilson89/nightcut.git
+git clone -b nightcut-warzone https://github.com/ademtasdemir-dev/lagzero-lab.git nightcut
 cd nightcut
 
 # 2. Python-Umgebung installieren (inkl. PyTorch mit CUDA)

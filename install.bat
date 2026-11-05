@@ -10,7 +10,8 @@ rem  von GitHub, richtet die Python-Umgebung ein und laedt die KI-Modelle.
 rem  Einfach doppelklicken. Erneut ausfuehren = Update.
 rem ===================================================================
 
-set "REPO=https://github.com/Nilson89/nightcut.git"
+set "REPO=https://github.com/ademtasdemir-dev/lagzero-lab.git"
+set "BRANCH=nightcut-warzone"
 set "VISION_MODEL=qwen2.5vl:7b"
 set "EDIT_MODEL=qwen3:14b"
 
@@ -87,7 +88,7 @@ if exist "%TARGET%\.git" (
         echo  Bitte umbenennen oder loeschen und das Skript erneut starten.
         goto :fail
     )
-    git clone "%REPO%" "%TARGET%" || goto :fail
+    git clone -b "%BRANCH%" "%REPO%" "%TARGET%" || goto :fail
 )
 
 if defined SHORTCUT (

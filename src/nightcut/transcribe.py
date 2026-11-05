@@ -11,11 +11,15 @@ HALLUCINATIONS = re.compile(
     r"untertitel|amara\.org|zdf|copyright|www\.|\.de\b|subtitles by|"
     r"vertraue und glaube|göttliche kraft|"
     # alone it is the classic subtitle ending; inside a real goodbye it is kept (episode end!)
-    r"^\W*vielen dank fürs zuschauen\W*$",
+    r"^\W*vielen dank fürs zuschauen\W*$|"
+    # outro phrases Whisper writes on gunfire and explosions when they stand alone
+    r"^\W*(bis zum nächsten mal|das war'?s für heute|tschüss|danke fürs zuschauen|vielen dank)\W*$",
     re.IGNORECASE,
 )
 # Whisper's way of "transcribing" music: a lone tag, or one sound repeated over and over.
-MUSIC = re.compile(r"^\W*(musik|music|applaus|♪+)\W*$|\b(\w{1,5})\b(?:\W+\2\b){5,}", re.IGNORECASE)
+MUSIC = re.compile(r"^\W*(musik|music|applaus|♪+)\W*$|\b(\w{1,5})\b(?:\W+\2\b){5,}"
+                   # a group of up to four words in a loop ("du bist der nacht du bist der nacht ...")
+                   r"|\b(\w+(?:\W+\w+){0,3})\b(?:\W+\3\b){3,}", re.IGNORECASE)
 
 
 def is_noise(text: str) -> bool:
@@ -69,4 +73,22 @@ def transcribe_regions(pcm: np.ndarray, sample_rate: int, regions: list[tuple[fl
 
     del asr
     free_vram()
-    return segments
+    return drop_repeats(segments)
+
+
+def drop_repeats(segments: list[dict], keep: int = 2, window_s: float = 30.0) -> list[dict]:
+    """Whisper on noisy audio repeats one sentence second after second ("Was ist das?" x30).
+
+    The same text more than `keep` times within `window_s` seconds is invented: only the first ones stay.
+    """
+    def norm(text: str) -> str:
+        return re.sub(r"\W+", " ", text.lower()).strip()
+
+    out, seen = [], {}
+    for seg in sorted(segments, key=lambda s: s["start"]):
+        key = norm(seg["text"])
+        times = [t for t in seen.get(key, []) if seg["start"] - t <= window_s]
+        seen[key] = times + [seg["start"]]
+        if len(times) < keep:
+            out.append(seg)
+    return out
