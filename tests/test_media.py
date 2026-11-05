@@ -26,3 +26,18 @@ def test_title_list_and_whole_words_only():
 def test_falls_back_to_position():
     assert INFO.find_audio({"title": "PARTY", "index": 3}).title == "DESKTOP"
     assert INFO.find_audio(None) is None
+
+
+def test_audio_only_file_gets_a_clear_error(tmp_path, monkeypatch):
+    import json
+    import subprocess
+
+    import pytest
+
+    from nightcut import media
+
+    streams = {"streams": [{"index": 0, "codec_type": "audio", "channels": 2, "sample_rate": "48000"}],
+               "format": {"duration": "1306.5"}}
+    monkeypatch.setattr(media, "run", lambda *a, **k: subprocess.CompletedProcess(a, 0, json.dumps(streams), ""))
+    with pytest.raises(ValueError, match="no video stream"):
+        media.probe(tmp_path / "audio_only.mp4")

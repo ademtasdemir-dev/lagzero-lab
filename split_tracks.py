@@ -22,7 +22,19 @@ DEMUCS = ["uvx", "--python", "3.12", "--with", "torch==2.5.1", "--with", "torcha
           "--with", "soundfile", "--from", "demucs==4.0.1", "demucs"]
 
 
+def check_streams(src: Path) -> None:
+    """Stop right away for files without picture or sound (e.g. a Twitch download "audio only")."""
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=codec_type", "-of", "csv=p=0",
+                          str(src)], capture_output=True, text=True).stdout.split()
+    if "video" not in out:
+        sys.exit(f"No video stream in {src.name}: the file has sound only (e.g. a Twitch download with "
+                 f"quality \"audio only\"). nightcut needs the picture; download it with video.")
+    if "audio" not in out:
+        sys.exit(f"No audio stream in {src.name}.")
+
+
 def split(src: Path) -> Path:
+    check_streams(src)
     out_dir = src.parent / "getrennt"
     out_dir.mkdir(exist_ok=True)
     target = out_dir / src.name

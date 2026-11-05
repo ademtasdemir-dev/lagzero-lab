@@ -66,7 +66,9 @@ def probe(path: Path) -> MediaInfo:
         capture_output=True, text=True,
     ).stdout
     data = json.loads(out)
-    video = next(s for s in data["streams"] if s["codec_type"] == "video")
+    video = next((s for s in data["streams"] if s["codec_type"] == "video"), None)
+    if video is None:  # e.g. a Twitch download with quality "audio only"
+        raise ValueError(f"{path.name} has no video stream (audio only?). nightcut needs the picture.")
     num, den = (int(x) for x in video["r_frame_rate"].split("/"))
     audio = [
         AudioStream(
