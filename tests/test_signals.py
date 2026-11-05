@@ -49,3 +49,9 @@ def test_too_few_peaks_go_below_the_percentile_but_not_below_the_median():
            "snap_to_speech_s": 4, "min_score_percentile": 99.9}
     assert len(signals.pick_candidates(score, [], cfg, 600.0)) == 1
     assert len(signals.pick_candidates(score, [], {**cfg, "min_count": 8}, 600.0)) == 5   # median 0.2 is the floor
+
+
+def test_recording_shorter_than_the_baseline():
+    db = np.linspace(-40, -20, 181, dtype=np.float32)       # 45 s, baseline window is 60 s
+    assert len(signals.moving_average(db, 240)) == 181
+    assert len(signals.spike_score(db)) == 181

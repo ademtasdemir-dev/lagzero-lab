@@ -26,6 +26,9 @@ def envelope_db(pcm: np.ndarray, sample_rate: int, chunk_frames: int = 20000) ->
 
 
 def moving_average(x: np.ndarray, window: int) -> np.ndarray:
+    # a window longer than the signal (recording shorter than the baseline) would make
+    # np.convolve(mode="same") return `window` values instead of len(x)
+    window = min(window, len(x))
     if window <= 1:
         return x.astype(np.float32)
     kernel = np.ones(window, dtype=np.float32) / window
